@@ -51,16 +51,12 @@ socket.on('updatePlayers', players => {
   });
 });
 
-socket.on('phaseChange', phase => {
-  document.getElementById('phaseInfo').innerText = phase === 'day' ? 'Gündüz' : 'Gece';
-  let duration = phase === 'day' ? 90 : 20;
-  const timerElem = document.getElementById('phaseTimer');
-  const interval = setInterval(() => {
-    timerElem.innerText = `Süre: ${duration} saniye`;
-    duration--;
-    if (duration < 0) {
-      clearInterval(interval);
-      timerElem.innerText = '';
-    }
-  }, 1000);
+socket.on('updatePlayers', players => {
+  const container = document.getElementById('players');
+  container.innerHTML = '';
+  players.forEach(p => {
+    const div = document.createElement('div');
+    div.innerHTML = `<img src="https://hortlakli-koy-demo-1.onrender.com${p.avatar}"><br>${p.nickname}`;
+    container.appendChild(div);
+  });
 });
