@@ -31,7 +31,7 @@ socket.on('updatePlayers', players => {
   players.forEach(p => {
     const wrapper = document.createElement('div');
     const img = document.createElement('img');
-    img.src = p.avatar;
+    img.src = "https://hortlakli-koy-demo-1.onrender.com" + p.avatar;
     img.title = p.nickname;
     img.onclick = () => alert(`${p.nickname} seçildi (görev tıklaması)`); // placeholder
     const label = document.createElement('div');
