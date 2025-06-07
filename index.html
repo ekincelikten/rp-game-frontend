@@ -6,6 +6,17 @@
   <style>
     #game { display: none; }
     img { width: 80px; }
+    #phaseInfo {
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 10px;
+    }
+    #phaseTimer {
+      text-align: center;
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
@@ -15,6 +26,8 @@
   </div>
 
   <div id="game">
+    <div id="phaseInfo">Lobi</div>
+    <div id="phaseTimer"></div>
     <div id="roleInfo">Rolünüz:</div>
     <div id="players"></div>
     <div id="chatMessages" style="height:200px;overflow:auto;border:1px solid black;margin-top:10px;"></div>
@@ -22,7 +35,6 @@
     <button id="sendBtn">Gönder</button>
   </div>
 
-  <!-- CDN üzerinden socket.io yükleniyor -->
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script src="script.js"></script>
 </body>

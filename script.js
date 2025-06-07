@@ -50,3 +50,17 @@ socket.on('updatePlayers', players => {
     container.appendChild(wrapper);
   });
 });
+
+socket.on('phaseChange', phase => {
+  document.getElementById('phaseInfo').innerText = phase === 'day' ? 'Gündüz' : 'Gece';
+  let duration = phase === 'day' ? 90 : 20;
+  const timerElem = document.getElementById('phaseTimer');
+  const interval = setInterval(() => {
+    timerElem.innerText = `Süre: ${duration} saniye`;
+    duration--;
+    if (duration < 0) {
+      clearInterval(interval);
+      timerElem.innerText = '';
+    }
+  }, 1000);
+});
