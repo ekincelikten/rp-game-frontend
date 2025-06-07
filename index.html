@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hortlaklı Köy</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; background: #f1f1f1; }
+    #playerArea { display: flex; flex-wrap: wrap; justify-content: center; }
+    .avatar-card {
+      border: 2px solid gray;
+      border-radius: 8px;
+      margin: 10px;
+      padding: 5px;
+      cursor: pointer;
+      width: 100px;
+      background: white;
+    }
+    .avatar-card.dead img {
+      filter: grayscale(100%);
+      opacity: 0.4;
+    }
+    .avatar-card img {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Hortlaklı Köy</h1>
+  <div id="setup">
+    <input id="nickname" placeholder="Nick'inizi yazın" />
+    <button onclick="joinGame()">Oyuna Katıl</button>
+  </div>
+
+  <div id="game" style="display:none">
+    <p id="roleInfo"></p>
+    <div id="phaseInfo"></div>
+    <div id="playerArea"></div>
+  </div>
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script>
+    const socket = io("https://hortlakli-koy-demo-1.onrender.com");
+    let playerRole = null;
+    let currentPhase = 'lobby';
+    let playerNickname = null;
+
+    function joinGame() {
+      const nick = document.getElementById("nickname").value;
+      if (!nick) return alert("Nick gir!");
+      playerNickname = nick;
+      socket.emit("joinGame", nick);
+      document.getElementById("setup").style.display = "none";
+      document.getElementById("game").style.display = "block";
+    }
+
+    socket.on("assignRole", ({ role }) => {
+      playerRole = role;
+      document.getElementById("roleInfo").textContent = `Rolünüz: ${role}`;
+    });
+
+    socket.on("phaseChange", (phase) => {
+      currentPhase = phase;
+      document.getElementById("phaseInfo").textContent = `Faz: ${phase === 'day' ? 'Gündüz' : 'Gece'}`;
+    });
+
+    socket.on("updatePlayers", (players) => {
+      const area = document.getElementById("playerArea");
+      area.innerHTML = "";
+      players.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "avatar-card" + (p.isAlive ? "" : " dead");
+        div.innerHTML = `<img src="${p.avatar}" /><br>${p.nickname}`;
+        if (currentPhase === 'night' && p.isAlive && p.nickname !== playerNickname) {
+          div.onclick = () => handleAvatarClick(p.nickname);
+        }
+        area.appendChild(div);
+      });
+    });
+
+    function handleAvatarClick(target) {
+      switch (playerRole) {
+        case "Dedektif":
+          socket.emit("dedektifAvatarTiklama", target);
+          break;
+        case "Doktor":
+          socket.emit("nightAction", { action: "protect", target });
+          break;
+        case "İfrit":
+          socket.emit("nightAction", { action: "silence", target });
+          break;
+        case "Gulyabani":
+          socket.emit("nightAction", { action: "kill", target });
+          break;
+        case "Gardiyan":
+          socket.emit("nightAction", { action: "jail", target });
+          break;
+      }
+      alert(`${target} seçildi`);
+    }
+
+    socket.on("investigationResult", ({ target, isHortlak }) => {
+      alert(`${target} ${isHortlak ? "bir hortlak!" : "masum."}`);
+    });
+
+    socket.on("gameOver", (msg) => {
+      alert(msg);
+      location.reload();
+    });
+  </script>
+</body>
+</html>
