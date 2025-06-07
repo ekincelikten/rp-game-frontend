@@ -1,25 +1,28 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html>
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Hortlaklı Köy</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    #game { display: none; }
+    img { width: 80px; }
+  </style>
 </head>
 <body>
   <div id="lobby">
-    <input type="text" id="nickname" placeholder="Takma adınız..." />
+    <input id="nickname" placeholder="Takma ad">
     <button id="joinBtn">Oyuna Katıl</button>
   </div>
-  <div id="game" style="display:none;">
-    <div id="roleInfo"></div>
+
+  <div id="game">
+    <div id="roleInfo">Rolünüz:</div>
     <div id="players"></div>
-    <div id="chat">
-      <div id="chatMessages" style="height:150px; overflow-y:auto; border:1px solid #ccc; margin-top:10px;"></div>
-      <input id="chatInput" placeholder="Mesaj yaz..." />
-      <button onclick="sendMessage()">Gönder</button>
-    </div>
+    <div id="chatMessages" style="height:200px;overflow:auto;border:1px solid black;margin-top:10px;"></div>
+    <input id="chatInput" placeholder="Mesaj yaz...">
+    <button id="sendBtn">Gönder</button>
   </div>
-  <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
+
+  <script src="/socket.io/socket.io.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
