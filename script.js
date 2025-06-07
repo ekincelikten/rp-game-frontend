@@ -55,17 +55,23 @@ socket.on('updatePlayers', players => {
     img.onclick = () => {
       if (!p.isAlive) return;
       if (phase === 'day') {
-        socket.emit('vote', p.nickname);
-      } else if (role === 'Dedektif' && phase === 'night') {
-        socket.emit('investigate', p.nickname);
-      } else if (role === 'Doktor' && phase === 'night') {
-        socket.emit('protect', p.nickname);
-      } else if (role === 'Gulyabani' && phase === 'night') {
-        socket.emit('kill', p.nickname);
-      } else if (role === 'İfrit' && phase === 'night') {
-        socket.emit('silence', p.nickname);
-      } else if (role === 'Gardiyan' && phase === 'night') {
-        socket.emit('jail', p.nickname);
+        if (role === 'Gardiyan') {
+          socket.emit('markJailTarget', p.nickname);
+        } else {
+          socket.emit('vote', p.nickname);
+        }
+      } else if (phase === 'night') {
+        if (role === 'Dedektif') {
+          socket.emit('investigate', p.nickname);
+        } else if (role === 'Doktor') {
+          socket.emit('protect', p.nickname);
+        } else if (role === 'Gulyabani') {
+          socket.emit('kill', p.nickname);
+        } else if (role === 'İfrit') {
+          socket.emit('silence', p.nickname);
+        } else if (role === 'Gardiyan') {
+          socket.emit('jail', p.nickname);
+        }
       }
     };
     const label = document.createElement('div');
