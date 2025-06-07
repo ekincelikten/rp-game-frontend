@@ -1,4 +1,4 @@
-const socket = io('https://hortlakli-koy-demo-1.onrender.com');
+const socket = io();
 let nickname = '';
 let role = '';
 
