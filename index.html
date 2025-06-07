@@ -13,7 +13,11 @@
   <div id="game" style="display:none;">
     <div id="roleInfo"></div>
     <div id="players"></div>
-    <div id="chat"></div>
+    <div id="chat">
+      <div id="chatMessages" style="height:150px; overflow-y:auto; border:1px solid #ccc; margin-top:10px;"></div>
+      <input id="chatInput" placeholder="Mesaj yaz..." />
+      <button onclick="sendMessage()">Gönder</button>
+    </div>
   </div>
   <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
   <script src="script.js"></script>

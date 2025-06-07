@@ -1,5 +1,7 @@
 const socket = io('https://hortlakli-koy-demo-1.onrender.com');
 let nickname = '';
+let role = '';
+let phase = '';
 
 function joinGame() {
   nickname = document.getElementById('nickname').value;
@@ -16,13 +18,30 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('joinBtn').addEventListener('click', joinGame);
 });
 
+function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (msg) {
+    socket.emit('chatMessage', msg);
+    input.value = '';
+  }
+}
+
 socket.on('assignRole', data => {
-  document.getElementById('roleInfo').innerText = `Rolünüz: ${data.role}`;
+  role = data.role;
+  document.getElementById('roleInfo').innerText = `Rolünüz: ${role}`;
 });
 
-socket.on('phaseChange', phase => {
-  const chat = document.getElementById('chat');
-  chat.innerHTML += `<p><em>Faz: ${phase}</em></p>`;
+socket.on('phaseChange', newPhase => {
+  phase = newPhase;
+  const chat = document.getElementById('chatMessages');
+  chat.innerHTML += `<p><em>Faz: ${newPhase}</em></p>`;
+});
+
+socket.on('chatMessage', msg => {
+  const box = document.getElementById('chatMessages');
+  box.innerHTML += `<p>${msg}</p>`;
+  box.scrollTop = box.scrollHeight;
 });
 
 socket.on('updatePlayers', players => {
@@ -33,7 +52,22 @@ socket.on('updatePlayers', players => {
     const img = document.createElement('img');
     img.src = "https://hortlakli-koy-demo-1.onrender.com" + p.avatar;
     img.title = p.nickname;
-    img.onclick = () => alert(`${p.nickname} seçildi (görev tıklaması)`); // placeholder
+    img.onclick = () => {
+      if (!p.isAlive) return;
+      if (phase === 'day') {
+        socket.emit('vote', p.nickname);
+      } else if (role === 'Dedektif' && phase === 'night') {
+        socket.emit('investigate', p.nickname);
+      } else if (role === 'Doktor' && phase === 'night') {
+        socket.emit('protect', p.nickname);
+      } else if (role === 'Gulyabani' && phase === 'night') {
+        socket.emit('kill', p.nickname);
+      } else if (role === 'İfrit' && phase === 'night') {
+        socket.emit('silence', p.nickname);
+      } else if (role === 'Gardiyan' && phase === 'night') {
+        socket.emit('jail', p.nickname);
+      }
+    };
     const label = document.createElement('div');
     label.innerText = p.nickname;
     wrapper.appendChild(img);
